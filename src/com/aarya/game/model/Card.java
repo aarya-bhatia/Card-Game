@@ -1,0 +1,69 @@
+package com.aarya.game.model;
+
+import java.util.List;
+
+public class Card implements Comparable<Card>, Collectible {
+
+	private final Rank rank;
+	private final Suit suit;
+
+	public Card(Rank rank, Suit suit) {
+		this.rank = rank;
+		this.suit = suit;
+	}
+
+	public Rank getRank() {
+		return rank;
+	}
+
+	public Suit getSuit() {
+		return suit;
+	}
+
+	public int getValue() {
+		return rank.getValue();
+	}
+
+	@Override
+	public String toString() {
+		return this.rank + " " + this.suit.getSymbol();
+	}
+
+	@Override
+	public int compareTo(Card other) {
+		return Integer.compare(this.getPoints(), other.getPoints());
+	}
+
+	public void show() {
+		System.out.println(this.toString());
+	}
+
+	/**
+	 * <ul>
+	 * <li>Cards of SPADE suit have points equal to their rank</li>
+	 * <li>TEN of DIAMOND has 2 points</li>
+	 * <li>ACE cards have 1 point each</li>
+	 * </ul>
+	 * 
+	 * @return the number of points of card
+	 */
+	public int getPoints() {
+		if (this.rank.equals(Rank.ACE)) {
+			return this.getValue();
+		} else if (this.suit.equals(Suit.SPADE)) {
+			return this.getValue();
+		} else if (this.suit.equals(Suit.DIAMOND) && rank.equals(Rank.TEN)) {
+			return 2;
+		}
+		return 0;
+	}
+
+	public static int getCaptureValue(List<Card> cards) {
+		int acc = 0;
+		for (Card c : cards) {
+			Integer value = c.getValue();
+			acc = acc + value;
+		}
+		return acc;
+	}
+}

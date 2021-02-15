@@ -51,7 +51,7 @@ public enum Rank {
 
     /**
      * Returns the Rank instance represented by the capture value
-     * 
+     *
      * @param value capture value
      * @return a rank
      */
@@ -65,7 +65,7 @@ public enum Rank {
 
     /**
      * Adds two ranks and returns the raised Rank
-     * 
+     *
      * @param r1 rank of first element
      * @param r2 rank of second element
      * @return new rank
@@ -75,21 +75,9 @@ public enum Rank {
     }
 
     /**
-     * A rank of house can be raised if the new rank is still less than or equal to
-     * the max rank, i.e. King
-     * 
-     * @param r1 first rank
-     * @param r2 second rank
-     * @return true or false
-     */
-    public static boolean canRaiseRank(Rank r1, Rank r2) {
-        return r1.getValue() + r2.getValue() <= MAX_RANK;
-    }
-
-    /**
      * Subtracts two ranks and returns the lowered Rank
-     * 
-     * @param rank first rank
+     *
+     * @param rank  first rank
      * @param rank2 second rank
      * @return new rank
      */
@@ -101,12 +89,17 @@ public enum Rank {
      * A set of cards is considered valid if the total captureValue is a multiple of
      * any number from 9 to King, i.e 13. This method will reduce the capture value
      * to a known Rank and return it if applicable.
-     * 
+     *
      * @param captureValue sum of the captureValues of each card and house
      *                     respectively
      * @return a rank representing the set of cards and houses
      */
     public static Rank normaliseRank(int captureValue) {
+
+        if (captureValue < MAX_RANK) {
+            return Rank.find(captureValue);
+        }
+
         for (int i = MAX_RANK; i >= MIN_RANK; i--) {
             if (captureValue % i == 0) {
                 return find(i);
@@ -115,6 +108,11 @@ public enum Rank {
         return null;
     }
 
+    /**
+     * Tells if the rank is valid to construct a house with
+     * @param rank the rank
+     * @return true or false if rank is between 9 and 13
+     */
     public static boolean isValidRank(Rank rank) {
         return rank != null && rank.getValue() >= MIN_RANK && rank.getValue() <= MAX_RANK;
     }

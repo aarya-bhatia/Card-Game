@@ -1,15 +1,21 @@
 package com.aarya.game.model;
 
+import java.io.Serializable;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public class Card implements Comparable<Card>, Collectible {
+public class Card implements Comparable<Card>, Collectible, Serializable {
 
 	private final Rank rank;
 	private final Suit suit;
 
+	private static final Logger logger = Logger.getLogger(Card.class.getName());
+
 	public Card(Rank rank, Suit suit) {
 		this.rank = rank;
 		this.suit = suit;
+//		logger.log(Level.INFO, "Created Card: " + this.toString());
 	}
 
 	public Rank getRank() {
@@ -59,10 +65,12 @@ public class Card implements Comparable<Card>, Collectible {
 	}
 
 	public static int getCaptureValue(List<Card> cards) {
+		if(cards == null) {
+			return 0;
+		}
 		int acc = 0;
 		for (Card c : cards) {
-			Integer value = c.getValue();
-			acc = acc + value;
+			acc += c.getValue();
 		}
 		return acc;
 	}

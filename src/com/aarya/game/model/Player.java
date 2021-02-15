@@ -1,8 +1,8 @@
 package com.aarya.game.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 public class Player implements Serializable {
@@ -15,6 +15,8 @@ public class Player implements Serializable {
 	private HashMap<Card, House> keyBox;
 
 	private House collection;
+
+	public Player() { this.hand = new ArrayList<>(); }
 
 	public Player(List<Card> hand) {
 		this.hand = hand;

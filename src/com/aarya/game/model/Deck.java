@@ -1,10 +1,11 @@
 package com.aarya.game.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Deck {
+public class Deck implements Serializable {
 
     private List<Card> deck;
 
@@ -22,6 +23,8 @@ public class Deck {
     public List<Card> getDeck() {
         return this.deck;
     }
+
+    public void setDeck(List<Card> deck) { this.deck = deck; }
 
     public int size() {
         return this.deck.size();

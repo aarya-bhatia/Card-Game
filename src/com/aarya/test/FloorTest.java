@@ -40,7 +40,7 @@ public class FloorTest {
         CardSelector cardSelector = new CardSelector();
 
         cardSelector.select(c4);
-        cardSelector.setSelectedCard(c7); // Assume player has c7
+        cardSelector.setPlayerCard(c7); // Assume player has c7
 
         h11.setCards(new ArrayList<>(Arrays.asList(c4, c7)));
 
@@ -59,7 +59,7 @@ public class FloorTest {
 
         cardSelector1.select(h11);
         cardSelector1.select(c1);
-        cardSelector1.setSelectedCard(c12); // Assume player has c12
+        cardSelector1.setPlayerCard(c12); // Assume player has c12
 
         House h12 = new House(Rank.QUEEN, new ArrayList<>(Arrays.asList(c1, c12)), new ArrayList<>(Collections.singletonList(h11)));
 
@@ -76,7 +76,7 @@ public class FloorTest {
         CardSelector cardSelector2 = new CardSelector();
 
         cardSelector2.select(c9);
-        cardSelector2.setSelectedCard(c3);
+        cardSelector2.setPlayerCard(c3);
 
         House h$12 = new House(Rank.QUEEN, new ArrayList<>(Arrays.asList(c3, c9)), new ArrayList<>());
 

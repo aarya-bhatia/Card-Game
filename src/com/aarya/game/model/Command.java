@@ -1,88 +1,109 @@
 package com.aarya.game.model;
 
-import com.aarya.game.controller.HouseKeyNotFoundException;
-
 import java.io.Serializable;
 
-/**
- * Encapsulates the different kinds of commands used in the game. Each command
- * will have access to an instance of the selected cards and houses, the player
- * whose turn it is, and the game floor. This class will support execute and
- * undo operations.
- */
-public abstract class Command implements Serializable {
+public class Command implements Serializable {
 
-    protected CardSelector cardSelector;
-    protected Player player;
-    protected Floor floor;
+    private enum CommandState {
+        READY_TO_EXECUTE, READY_TO_UNDO
+    }
 
-    /* This is the house constructed from the selected elements. */
-    protected House source;
+    private final CardSelector cardSelector;
+    private final PlayerController playerController;
+    private final FloorController floorController;
+    private CommandState state;
+    private final House source;
 
-    public Command(CardSelector cardSelector, Player player, Floor floor) throws PlayerCardNotFoundException, RankMismatchException {
-        /*
-         * The player must select a card to throw
-         */
-        if (!cardSelector.hasSelectedCard()) {
-            throw new PlayerCardNotFoundException();
-        }
-
+    public Command(CardSelector cardSelector, PlayerController playerController, FloorController floorController)
+            throws IllegalMoveException {
         this.cardSelector = cardSelector;
-        this.player = player;
-        this.floor = floor;
+        this.playerController = playerController;
+        this.floorController = floorController;
+        this.state = CommandState.READY_TO_EXECUTE;
+        this.source = constructSourceHouse();
+        handleValidation();
+    }
 
-        /*
-         * The source house should not be null since it has at least the player's card.
-         */
-        this.setSource(this.constructSourceHouse());
+    /**
+     * All exception handling should be done over here
+     * @throws IllegalMoveException an illegal move
+     */
+    public void handleValidation() throws IllegalMoveException {
+        if (!cardSelector.hasSelectedCard()) {
+            throw new IllegalMoveException("Player must select a card to play");
+        }
+        if (!playerController.hasCard(cardSelector.getPlayerCard())) {
+            throw new IllegalMoveException("Player does not have card: " + cardSelector.getPlayerCard());
+        }
+        if(!playerController.hasKey(cardSelector.getPlayerCard(), source)) {
+            throw new IllegalMoveException("Player does not have key for house: " + source);
+        }
+        for (Card card : cardSelector.getCards()) {
+            if (!floorController.hasCard(card)) {
+                throw new IllegalMoveException("Floor does not have card: " + card);
+            }
+        }
+        for (House house : cardSelector.getHouses()) {
+            if (house.isClosed()) {
+                throw new IllegalMoveException("Cannot select house: " + house);
+            }
+            if (!floorController.hasHouse(house)) {
+                throw new IllegalMoveException("Floor does not have house: " + house);
+            }
+        }
+        if (!Rank.isValidRank(getSourceRank())) {
+            throw new IllegalMoveException("Cannot create house with invalid rank");
+        }
+    }
+
+    private Rank getSourceRank() {
+        return Rank.normaliseRank(cardSelector.getCaptureValue());
     }
 
     public House getSource() {
         return source;
     }
 
-    public void setSource(House source) {
-        this.source = source;
-    }
-
-    public boolean hasSource() {
-        return this.source != null;
-    }
-
     public CardSelector getCardSelector() {
         return cardSelector;
     }
 
-    public Floor getFloor() {
-        return floor;
+    public FloorController getFloorController() {
+        return floorController;
     }
 
-    public Player getPlayer() {
-        return player;
+    public PlayerController getPlayerController() {
+        return playerController;
     }
 
-    public void setCardSelector(CardSelector cardSelector) {
-        this.cardSelector = cardSelector;
+    public void setCommandState(CommandState state) {
+        this.state = state;
     }
 
-    public void setFloor(Floor floor) {
-        this.floor = floor;
-    }
-
-    public void setPlayer(Player player) {
-        this.player = player;
-    }
-
-    public void execute() throws HouseKeyNotFoundException, RankMismatchException {
-        /* Check to see if player has a key for the source house */
-        if (!validateMove()) {
-            throw new HouseKeyNotFoundException();
+    /**
+     * @throws IllegalMoveException throws exception if validation fails
+     */
+    public void execute() throws IllegalMoveException {
+        if (!state.equals(CommandState.READY_TO_EXECUTE)) {
+            throw new IllegalMoveException("Cannot execute move again");
         }
-    };
+        setCommandState(CommandState.READY_TO_UNDO);
+    }
 
-    public abstract void undo();
+    /**
+     * Undo move
+     */
+    public void undo() throws IllegalMoveException {
+        if (!state.equals(CommandState.READY_TO_UNDO)) {
+            throw new IllegalMoveException("Cannot undo move before execution");
+        }
+        setCommandState(CommandState.READY_TO_EXECUTE);
+    }
 
-    public abstract boolean validateMove();
-
-    public abstract House constructSourceHouse() throws RankMismatchException;
+    /**
+     * @return The house build from selected items
+     */
+    public House constructSourceHouse() {
+        return new House(getSourceRank(), cardSelector.getAllCards(), cardSelector.getHouses());
+    }
 }

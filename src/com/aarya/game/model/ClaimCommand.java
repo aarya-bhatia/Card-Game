@@ -1,7 +1,5 @@
 package com.aarya.game.model;
 
-import com.aarya.game.controller.HouseKeyNotFoundException;
-
 import java.util.List;
 
 public class ClaimCommand extends Command {
@@ -42,7 +40,7 @@ public class ClaimCommand extends Command {
     @Override
     public House constructSourceHouse() throws RankMismatchException {
 
-        Card playerCard = getCardSelector().getSelectedCard();
+        Card playerCard = getCardSelector().getPlayerCard();
         List<Card> sourceCards = getCardSelector().getCards();
         List<House> sourceHouses = getCardSelector().getHouses();
 

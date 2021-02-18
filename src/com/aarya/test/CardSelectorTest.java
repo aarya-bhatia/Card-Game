@@ -29,7 +29,7 @@ public class CardSelectorTest {
 
         Card selectedCard = new Card(Rank.ACE, Suit.DIAMOND);
 
-        cardSelector.setSelectedCard(selectedCard);
+        cardSelector.setPlayerCard(selectedCard);
 
         assertNotNull(cardSelector);
         assertTrue(cardSelector.hasCards());
@@ -40,7 +40,7 @@ public class CardSelectorTest {
         assertEquals(cardSelector.numHouses(), 0);
 
         assertEquals(cardSelector.getCards(), Arrays.asList(cards.get(0), cards.get(2)));
-        assertSame(cardSelector.getSelectedCard(), selectedCard);
+        assertSame(cardSelector.getPlayerCard(), selectedCard);
 
         House house = new House(Rank.JACK);
         house.addCard(new Card(Rank.JACK, Suit.DIAMOND));

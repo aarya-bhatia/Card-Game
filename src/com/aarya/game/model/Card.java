@@ -74,4 +74,8 @@ public class Card implements Comparable<Card>, Collectible, Serializable {
 		}
 		return acc;
 	}
+
+	public int getCaptureValue() {
+		return this.getRank().getValue();
+	}
 }

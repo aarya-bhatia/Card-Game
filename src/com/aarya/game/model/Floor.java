@@ -27,7 +27,7 @@ public class Floor implements Serializable {
     }
 
     public void setCards(List<Card> cards) {
-        this.cards = cards;
+        this.cards = new ArrayList<>(cards);
     }
 
     public List<House> getHouses() {
@@ -77,86 +77,5 @@ public class Floor implements Serializable {
         System.out.println("----------------------------------");
     }
 
-    public House findHouseWithRank(Rank r) {
-        for (House h : this.houses) {
-            if (h.getRank().equals(r)) {
-                return h;
-            }
-        }
-        return null;
-    }
-
-    public void removeMergeItemsFromFloor(CardSelector cardSelector) {
-        if (cardSelector.hasCards()) {
-            this.cards.removeAll(cardSelector.getCards());
-        }
-        if (cardSelector.hasHouses()) {
-            this.houses.removeAll(cardSelector.getHouses());
-        }
-    }
-
-    public void addMergeItemsToFloor(CardSelector cardSelector) {
-        if (cardSelector.hasCards()) {
-            this.cards.addAll(cardSelector.getCards());
-        }
-        if (cardSelector.hasHouses()) {
-            this.houses.addAll(cardSelector.getHouses());
-        }
-    }
-
-    /**
-     * Adds the source house and updates the floor state
-     *
-     * @param source       the source house
-     * @param cardSelector the card selector
-     */
-    public void performMerge(House source, CardSelector cardSelector) throws RankMismatchException {
-        House target = findHouseWithRank(source.getRank());
-
-        if (target != null) {
-            target.add(source);
-        } else {
-            this.houses.add(source);
-        }
-
-        this.removeMergeItemsFromFloor(cardSelector);
-    }
-
-    /**
-     * Removes the source house and resets floor state
-     *
-     * @param source       the source house
-     * @param cardSelector the card selector
-     */
-    public void undoMerge(House source, CardSelector cardSelector) {
-        House parent = source.getParent();
-
-        if (parent == null) {
-            this.houses.remove(source);
-        } else {
-            parent.removeChild(source);
-        }
-
-        this.addMergeItemsToFloor(cardSelector);
-    }
-
-    /**
-     * Removes the cards and houses from floor as they are
-     * owned by the player who initiated the claim op
-     *
-     * @param cardSelector the card selector
-     */
-    public void performClaim(CardSelector cardSelector) {
-        removeMergeItemsFromFloor(cardSelector);
-    }
-
-    /**
-     * Resets the cards and houses to the floor as they
-     * are owned by the floor again
-     *
-     * @param cardSelector the card selector
-     */
-    public void undoClaim(CardSelector cardSelector) {
-        addMergeItemsToFloor(cardSelector);
-    }
 }
+

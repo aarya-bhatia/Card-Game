@@ -5,9 +5,9 @@ import java.util.List;
 
 public class CardSelector {
 
-    private List<House> houses;
-    private List<Card> cards;
-    private Card selectedCard;
+    private final List<House> houses;
+    private final List<Card> cards;
+    private Card playerCard;
 
     public CardSelector() {
         this.houses = new ArrayList<>();
@@ -42,22 +42,41 @@ public class CardSelector {
         this.cards.remove(card);
     }
 
-    public void setSelectedCard(Card card) {
-        this.selectedCard = card;
+    public void setPlayerCard(Card card) {
+        this.playerCard = card;
     }
 
-    public Card getSelectedCard() {
-        return this.selectedCard;
+    public Card getPlayerCard() {
+        return this.playerCard;
     }
 
     public boolean hasCards() {
-        return this.cards != null && !this.cards.isEmpty();
+        return !this.cards.isEmpty();
     }
 
-    public boolean hasHouses() {
-        return this.houses != null && !this.houses.isEmpty();
+    public boolean hasHouses() { return !this.houses.isEmpty(); }
+
+    public boolean hasSelectedCard() { return this.playerCard != null; }
+
+    public List<Card> getAllCards() {
+        List<Card> c = new ArrayList<>();
+        c.add(this.playerCard);
+        c.addAll(this.cards);
+        return c;
     }
 
-    public boolean hasSelectedCard() { return this.selectedCard != null; }
+    public int getCaptureValue() {
+        int c = 0;
 
+        c += this.playerCard.getCaptureValue();
+
+        for (House house : this.houses) {
+            c += house.getCaptureValue();
+        }
+
+        for (Card card : this.cards) {
+            c += card.getCaptureValue();
+        }
+        return c;
+    }
 }

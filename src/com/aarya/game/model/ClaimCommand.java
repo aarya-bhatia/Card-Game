@@ -6,7 +6,7 @@ import java.util.List;
 
 public class ClaimCommand extends Command {
 
-    public ClaimCommand(CardSelector cardSelector, Player player, Floor floor) {
+    public ClaimCommand(CardSelector cardSelector, Player player, Floor floor) throws RankMismatchException, PlayerCardNotFoundException {
         super(cardSelector, player, floor);
     }
 

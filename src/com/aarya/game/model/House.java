@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-public class House implements Collectible, Iterable<House>, Serializable {
+public class House implements Comparable<House>, Collectible, Iterable<House>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -24,6 +24,33 @@ public class House implements Collectible, Iterable<House>, Serializable {
         this.parent = null;
     }
 
+    public House(Rank rank, List<Card> cards, List<House> houses) throws RankNotFoundException {
+        int captureValue = 0;
+
+        if(cards != null) {
+            for (Card card : cards) {
+                captureValue += card.getRank().getValue();
+            }
+        }
+
+        if(houses != null) {
+            for (House house: houses) {
+                captureValue += house.getRank().getValue();
+            }
+        }
+
+        Rank r = Rank.normaliseRank(captureValue);
+
+        if(!Rank.isValidRank(r)) {
+            throw new RankNotFoundException();
+        }
+
+        this.rank = r;
+        this.cards = cards;
+        this.children = houses;
+        this.parent = null;
+    }
+
     public House getParent() {
         return parent;
     }
@@ -37,7 +64,7 @@ public class House implements Collectible, Iterable<House>, Serializable {
     }
 
     public void setCards(List<Card> cards) {
-        this.cards = cards;
+        this.cards = new ArrayList<>(cards);
     }
 
     @Override
@@ -180,5 +207,10 @@ public class House implements Collectible, Iterable<House>, Serializable {
             }
         }
 
+    }
+
+    @Override
+    public int compareTo(House o) {
+        return this.getRank().compareTo(o.getRank());
     }
 }

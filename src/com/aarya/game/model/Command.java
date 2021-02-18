@@ -19,10 +19,22 @@ public abstract class Command implements Serializable {
     /* This is the house constructed from the selected elements. */
     protected House source;
 
-    public Command(CardSelector cardSelector, Player player, Floor floor) {
+    public Command(CardSelector cardSelector, Player player, Floor floor) throws PlayerCardNotFoundException, RankMismatchException {
+        /*
+         * The player must select a card to throw
+         */
+        if (!cardSelector.hasSelectedCard()) {
+            throw new PlayerCardNotFoundException();
+        }
+
         this.cardSelector = cardSelector;
         this.player = player;
         this.floor = floor;
+
+        /*
+         * The source house should not be null since it has at least the player's card.
+         */
+        this.setSource(this.constructSourceHouse());
     }
 
     public House getSource() {
@@ -32,8 +44,10 @@ public abstract class Command implements Serializable {
     public void setSource(House source) {
         this.source = source;
     }
-    
-    public boolean hasSource() { return this.source != null; }
+
+    public boolean hasSource() {
+        return this.source != null;
+    }
 
     public CardSelector getCardSelector() {
         return cardSelector;
@@ -59,7 +73,12 @@ public abstract class Command implements Serializable {
         this.player = player;
     }
 
-    public abstract void execute() throws RankMismatchException, HouseKeyNotFoundException;
+    public void execute() throws HouseKeyNotFoundException, RankMismatchException {
+        /* Check to see if player has a key for the source house */
+        if (!validateMove()) {
+            throw new HouseKeyNotFoundException();
+        }
+    };
 
     public abstract void undo();
 

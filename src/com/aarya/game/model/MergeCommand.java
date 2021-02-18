@@ -4,6 +4,9 @@ import com.aarya.game.controller.HouseKeyNotFoundException;
 
 import java.util.List;
 
+// TODO: check houses selected are open only
+// TODO: check cards and houses from selector exist on the floor
+
 /**
  * The player card, source cards and houses are encapsulated within the
  * cardSelector instance. The floor will accept these and merge them with a
@@ -17,26 +20,20 @@ import java.util.List;
  */
 public class MergeCommand extends Command {
 
-    public MergeCommand(CardSelector cardSelector, Player player, Floor floor) {
+    public MergeCommand(CardSelector cardSelector, Player player, Floor floor) throws PlayerCardNotFoundException, RankMismatchException {
         super(cardSelector, player, floor);
     }
 
+    /**
+     * The source house is merged with another on the floor.
+     * The selected card is taken from player.
+     * @throws RankMismatchException should not occur
+     * @throws HouseKeyNotFoundException The player does not have a key for source house
+     */
     @Override
-    public void execute() throws RankMismatchException, HouseKeyNotFoundException {
-        /*
-         * Note: The source house should not be null since it has at least the player's card.
-         * The case for null player card should be handled.
-         */
-        House source = constructSourceHouse();
-        super.setSource(source);
-
-        /* Check to see if player has a key for the source house */
-        if(!validateMove()) {
-            throw new HouseKeyNotFoundException();
-        }
-
-        /* We can proceed with merge now */
-        floor.performMerge(source);
+    public void execute() throws HouseKeyNotFoundException, RankMismatchException {
+        super.execute();
+        floor.performMerge(source, cardSelector);
         player.performMerge(cardSelector.getSelectedCard());
     }
 
@@ -50,6 +47,13 @@ public class MergeCommand extends Command {
         player.undoMerge(cardSelector.getSelectedCard());
     }
 
+    /**
+     * Assures that player has a key to house,
+     * which is not equal to the selected card
+     * since they might play the key then.
+     *
+     * @return checks if move is valid for player
+     */
     @Override
     public boolean validateMove() {
         return hasSource() && player.hasKey(cardSelector.getSelectedCard(), source.getRank());
@@ -60,16 +64,11 @@ public class MergeCommand extends Command {
      *
      * @throws RankMismatchException capture value of the source elements is invalid
      */
-
     @Override
     public House constructSourceHouse() throws RankMismatchException {
-        Card playerCard = getCardSelector().getSelectedCard();
-        List<Card> sourceCards = getCardSelector().getCards();
-        List<House> sourceHouses = getCardSelector().getHouses();
-
-        if (playerCard == null) {
-            throw new NullPointerException("No card selected by the player");
-        }
+        Card playerCard = getCardSelector().getSelectedCard(); // necessary
+        List<Card> sourceCards = getCardSelector().getCards(); // optional
+        List<House> sourceHouses = getCardSelector().getHouses(); // optional
 
         House source;
 
@@ -93,21 +92,20 @@ public class MergeCommand extends Command {
         Rank normalisedRank = Rank.normaliseRank(captureValue);
 
         // Fill the house with elements
-        if (Rank.isValidRank(normalisedRank)) {
-            source = new House(normalisedRank);
-            source.addCard(playerCard);
 
-            if (sourceCards != null) {
-                source.addCards(sourceCards);
-            }
-
-            else if (sourceHouses != null) {
-                for (House house : sourceHouses) {
-                    source.add(house);
-                }
-            }
-        } else {
+        if(!Rank.isValidRank(normalisedRank)) {
             throw new RankMismatchException();
+        }
+
+        source = new House(normalisedRank);
+        source.addCard(playerCard);
+
+        if (sourceCards != null) {
+            source.addCards(sourceCards);
+        } else if (sourceHouses != null) {
+            for (House house : sourceHouses) {
+                source.add(house);
+            }
         }
 
         return source;

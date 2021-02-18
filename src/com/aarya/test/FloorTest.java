@@ -8,96 +8,98 @@ import com.aarya.game.model.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collections;
 
 public class FloorTest {
+    private static final House h11 = new House(Rank.JACK);
 
-    private static House houseJack;
-    private static House houseKing1;
-    private static House houseKing2;
+    private static final Card c1 = new Card(Rank.ACE, Suit.DIAMOND);
+    private static final Card c3 = new Card(Rank.THREE, Suit.HEART);
+    private static final Card c4 = new Card(Rank.FOUR, Suit.CLUB);
+    private static final Card c7 = new Card(Rank.SEVEN, Suit.CLUB);
+    private static final Card c11 = new Card(Rank.JACK, Suit.SPADE);
+    private static final Card c12 = new Card(Rank.QUEEN, Suit.SPADE);
+    private static final Card c9 = new Card(Rank.NINE, Suit.SPADE);
 
-    public FloorTest() throws RankMismatchException {
-        createHouseJack();
-        createHouseKing1();
-        createHouseKing2();
-    }
-
-    public static void createHouseJack() throws RankMismatchException {
-        houseJack = new House(Rank.JACK);
-        houseJack.addCard(new Card(Rank.JACK, Suit.CLUB));
-
-        House h1 = new House(Rank.JACK);
-        h1.addCard(new Card(Rank.JACK, Suit.SPADE));
-
-        House h2 = new House(Rank.JACK);
-
-        houseJack.add(h1);
-        houseJack.add(h2);
-    }
-
-    public static void createHouseKing1() throws RankMismatchException {
-        houseKing1 = new House(Rank.KING);
-        houseKing1.addCards(Arrays.asList(
-                new Card(Rank.QUEEN, Suit.SPADE),
-                new Card(Rank.ACE, Suit.DIAMOND)
-        ));
-    }
-
-    public static void createHouseKing2() throws RankMismatchException {
-        houseKing2 = new House(Rank.KING);
-
-        houseKing2.addCards(Arrays.asList(
-                new Card(Rank.EIGHT, Suit.SPADE),
-                new Card(Rank.FIVE, Suit.DIAMOND)
-        ));
-
-    }
 
     @Test
-    public void floorTest() throws RankMismatchException {
+    public void floorTest() throws RankMismatchException, RankNotFoundException {
         Floor floor = new Floor();
-
-        List<Card> initStateCards = Arrays.asList(
-                new Card(Rank.SEVEN, Suit.CLUB),
-                new Card(Rank.ACE, Suit.DIAMOND),
-                new Card(Rank.JACK, Suit.SPADE),
-                new Card(Rank.FOUR, Suit.CLUB)
-        );
-
-        CardSelector cardSelector  = new CardSelector();
-        Card playerCard = new Card(Rank.THREE, Suit.HEART);
-
-        cardSelector.select(initStateCards.get(0));
-        cardSelector.select(initStateCards.get(1));
-        cardSelector.setSelectedCard(playerCard);
-
-        floor.setCards(initStateCards);
+        floor.setCards(new ArrayList<>(Arrays.asList(c1, c4, c9, c11)));
 
         assertNotNull("Floor should initialise houses", floor.getHouses());
         assertNotNull("Floor should initialise cards", floor.getCards());
         assertEquals("Floor should contain 4 cards", floor.numCards(), 4);
         assertEquals("Floor should not contain houses", floor.numHouses(), 0);
 
-        floor.performMerge(cardSelector);
+        assertTrue("Floor should update cards", floor.getCards().contains(c1));
+        assertTrue("Floor should update cards", floor.getCards().contains(c4));
+        assertTrue("Floor should update cards", floor.getCards().contains(c9));
+        assertTrue("Floor should update cards", floor.getCards().contains(c11));
 
-//        assertSame("Should find the house", floor.findHouseWithRank(Rank.JACK), houseJack);
+        CardSelector cardSelector = new CardSelector();
 
-        floor.performMerge(houseKing1);
+        cardSelector.select(c4);
+        cardSelector.setSelectedCard(c7); // Assume player has c7
 
-        assertEquals("Should merge house king as new house", floor.getHouses().size(), 2);
-        assertSame("Should find the house merged recently", floor.findHouseWithRank(Rank.KING), houseKing1);
+        h11.setCards(new ArrayList<>(Arrays.asList(c4, c7)));
 
-        floor.performMerge(houseKing2);
+        // creating house jack
+        floor.performMerge(h11, cardSelector);
 
-        // House king2 should be merged with house king1
-        // That is, floor should now contain houses jack and king1
+        assertEquals("Floor should update cards", floor.numCards(), 3);
+        assertEquals("Floor should update houses", floor.numHouses(), 1);
+        assertSame("Floor should update houses", floor.getHouses().get(0), h11);
+        assertTrue("Floor should update cards", floor.getCards().contains(c1));
+        assertTrue("Floor should update cards", floor.getCards().contains(c9));
+        assertTrue("Floor should update cards", floor.getCards().contains(c11));
+        assertSame("Should find the house", floor.findHouseWithRank(Rank.JACK), h11);
 
-        assertEquals(floor.getHouses().size(), 2);
-        assertSame(floor.findHouseWithRank(Rank.KING), houseKing1);
+        CardSelector cardSelector1 = new CardSelector();
 
-        floor.show();
+        cardSelector1.select(h11);
+        cardSelector1.select(c1);
+        cardSelector1.setSelectedCard(c12); // Assume player has c12
 
-        floor.undoMerge(houseKing2);
+        House h12 = new House(Rank.QUEEN, new ArrayList<>(Arrays.asList(c1, c12)), new ArrayList<>(Collections.singletonList(h11)));
+
+        // creating house queen
+        floor.performMerge(h12, cardSelector1);
+
+        assertEquals("Floor should update cards", floor.numCards(), 2);
+        assertEquals("Floor should update houses", floor.numHouses(), 1);
+        assertSame("Floor should update houses", floor.getHouses().get(0), h12);
+        assertTrue("Floor should update cards", floor.getCards().contains(c9));
+        assertTrue("Floor should update cards", floor.getCards().contains(c11));
+        assertSame("Should find the house", floor.findHouseWithRank(Rank.QUEEN), h12);
+
+        CardSelector cardSelector2 = new CardSelector();
+
+        cardSelector2.select(c9);
+        cardSelector2.setSelectedCard(c3);
+
+        House h$12 = new House(Rank.QUEEN, new ArrayList<>(Arrays.asList(c3, c9)), new ArrayList<>());
+
+        // merging to house queen
+        floor.performMerge(h$12, cardSelector2);
+
+        assertEquals("Floor should update cards", floor.numCards(), 1);
+        assertEquals("Floor should update houses", floor.numHouses(), 1);
+        assertSame("Floor should update houses", floor.getHouses().get(0), h12);
+        assertTrue("Floor should update cards", floor.getCards().contains(c11));
+        assertSame("Should find the house", floor.findHouseWithRank(Rank.QUEEN), h12);
+
+        floor.undoMerge(h$12, cardSelector2);
+        floor.undoMerge(h12, cardSelector1);
+        floor.undoMerge(h11, cardSelector);
+
+        // Floor should contains initial cards and no houses
+
+        assertTrue("Floor should update houses", floor.getHouses().isEmpty());
+        assertTrue("Floor should update cards", floor.getCards().contains(c1));
+        assertTrue("Floor should update cards", floor.getCards().contains(c4));
+        assertTrue("Floor should update cards", floor.getCards().contains(c9));
+        assertTrue("Floor should update cards", floor.getCards().contains(c11));
     }
 
 }

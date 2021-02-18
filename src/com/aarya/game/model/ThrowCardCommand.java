@@ -5,7 +5,7 @@ import com.aarya.game.controller.HouseKeyNotFoundException;
 //TODO: implement this command
 public class ThrowCardCommand extends Command {
 
-    public ThrowCardCommand(CardSelector cardSelector, Player player, Floor floor) {
+    public ThrowCardCommand(CardSelector cardSelector, Player player, Floor floor) throws RankMismatchException, PlayerCardNotFoundException {
         super(cardSelector, player, floor);
     }
 

@@ -22,6 +22,10 @@ public class CardSelector {
         return this.cards;
     }
 
+    public int numCards() { return this.cards.size(); }
+
+    public int numHouses() { return this.houses.size(); }
+
     public void select(House house) {
         this.houses.add(house);
     }
@@ -53,5 +57,7 @@ public class CardSelector {
     public boolean hasHouses() {
         return this.houses != null && !this.houses.isEmpty();
     }
+
+    public boolean hasSelectedCard() { return this.selectedCard != null; }
 
 }

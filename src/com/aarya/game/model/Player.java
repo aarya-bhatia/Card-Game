@@ -105,7 +105,7 @@ public class Player implements Serializable {
 	 *
 	 * @param h the given house
 	 */
-	public void performClaim(House h) {
+	public void performClaim(House h) throws RankMismatchException {
 		if (this.collection == null) {
 			this.setCollection(h);
 		} else {

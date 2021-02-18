@@ -52,15 +52,23 @@ public class House implements Collectible, Iterable<House>, Serializable {
 
     @Override
     public String toString() {
-        return "House " + this.rank;
+        return "[House " + this.rank + " # " + this.hashCode() + " ]";
     }
 
     public void show() {
-        this.cards.forEach(card -> System.out.println(card.toString()));
+        this.cards.forEach(card -> System.out.println(card));
     }
 
-    public void addCards(List<Card> cards) {
-        this.cards.addAll(cards);
+    public void addCards(List<Card> cards) throws RankMismatchException {
+        if(cards == null) {
+            return;
+        }
+        if (Card.getCaptureValue(cards) == this.getRank().getValue()) {
+            this.cards.addAll(cards);
+        }
+        else {
+            throw new RankMismatchException();
+        }
     }
 
     public List<House> getChildren() {
@@ -68,7 +76,11 @@ public class House implements Collectible, Iterable<House>, Serializable {
     }
 
     public void setChildren(List<House> children) {
-        this.children = children;
+        for(House h: children) {
+            if(h.getRank().equals(this.getRank())) {
+                this.children.add(h);
+            }
+        }
     }
 
     /**
@@ -79,18 +91,33 @@ public class House implements Collectible, Iterable<House>, Serializable {
      *
      * @return Tells whether a house is open or not.
      */
-    public boolean isOpen() {
+    public boolean isClosed() {
         return this.rank.equals(Rank.KING) || (this.rank.getValue() >= 9 && this.children.size() > 1);
+    }
+
+    public boolean isEmpty() {
+        return this.getCards().isEmpty();
     }
 
     /**
      * Makes the given house a child of current house.
      *
      * @param h the house
+     * @throws RankMismatchException rank is different
      */
-    public void add(House h) {
-        h.setParent(this);
-        this.children.add(h);
+    public void add(House h) throws RankMismatchException {
+        if(h == null || h.isEmpty()) {
+            System.out.println("Cannot add house: " + h + ", because it is null or empty.");
+            return;
+        }
+
+        if(h.getRank().equals(this.getRank())) {
+            h.setParent(this);
+            this.children.add(h);
+        }
+        else {
+            throw new RankMismatchException();
+        }
     }
 
     /**
@@ -105,21 +132,53 @@ public class House implements Collectible, Iterable<House>, Serializable {
             h.setParent(null);
             parent.getChildren().remove(h);
         }
+        else {
+            throw new RuntimeException("Cannot remove house: " + h.toString());
+        }
+    }
+
+    public static void destroy(House house) {
+        for(House h: house) {
+            if(h == house) {
+                continue;
+            }
+            System.out.println("Deleting House: " + h.toString());
+            remove(h);
+        }
     }
 
     public Iterator<House> iterator() {
         return new HouseIterator(this);
     }
 
-    public void addCard(Card playerCard) {
-        this.cards.add(playerCard);
+    public void addCard(Card playerCard) throws RankMismatchException {
+        if(playerCard == null) {
+            throw new NullPointerException("Cannot add card to house: " + this.toString());
+        }
+
+        if(playerCard.getRank().equals(this.getRank())) {
+            this.cards.add(playerCard);
+        }
+        else {
+            throw new RankMismatchException();
+        }
     }
 
     public boolean removeChild(House h) {
-        if(this.children != null) {
+        if(h != null && this.children != null) {
             return this.children.remove(h);
         }
-
         return false;
+    }
+
+    public void displayCards() {
+        System.out.println("Displaying the cards contained by house: " + this.toString());
+
+        for(House h: this) {
+            for(Card c: h.getCards()) {
+                System.out.println(c);
+            }
+        }
+
     }
 }

@@ -9,6 +9,7 @@ import org.junit.runners.Suite;
         CardTest.class,
         RankTest.class,
         DeckTest.class,
+        CardSelectorTest.class,
         HouseTest.class,
         FloorTest.class
 })

@@ -35,24 +35,49 @@ public class Floor implements Serializable {
     }
 
     public void setHouses(List<House> houses) {
-        this.houses = houses;
+        this.houses = new ArrayList<>(houses);
+    }
+
+    public int numCards() {
+        return this.cards.size();
+    }
+
+    public int numHouses() {
+        return this.houses.size();
     }
 
     public void show() {
-        this.cards.forEach(card -> System.out.println(card.toString()));
+        System.out.println("----------------------------------");
+        System.out.println("[START] Floor [START]");
 
-        System.out.println("\n");
+        System.out.println("----------------------------------");
+        System.out.println("Cards");
+        System.out.println("----------------------------------");
 
-        this.houses.forEach(house -> {
-            System.out.println(house.toString());
-            house.show();
-            System.out.println("\n");
-        });
+        if (!this.cards.isEmpty()) {
+            this.cards.forEach(card -> System.out.println(card.toString()));
+        } else {
+            System.out.println("No cards available.");
+        }
 
-        System.out.println("\n");
+        System.out.println("----------------------------------");
+        System.out.println("Houses");
+        System.out.println("----------------------------------");
+
+        if (!this.houses.isEmpty()) {
+            this.houses.forEach(house -> {
+                house.displayCards();
+                System.out.println("----------------------------------");
+            });
+        } else {
+            System.out.println("No houses available.");
+        }
+
+        System.out.println("[END] Floor [END]");
+        System.out.println("----------------------------------");
     }
 
-    private House findHouseWithRank(Rank r) {
+    public House findHouseWithRank(Rank r) {
         for (House h : this.houses) {
             if (h.getRank().equals(r)) {
                 return h;
@@ -61,12 +86,31 @@ public class Floor implements Serializable {
         return null;
     }
 
+    public void removeMergeItemsFromFloor(CardSelector cardSelector) {
+        if (cardSelector.hasCards()) {
+            this.cards.removeAll(cardSelector.getCards());
+        }
+        if (cardSelector.hasHouses()) {
+            this.houses.removeAll(cardSelector.getHouses());
+        }
+    }
+
+    public void addMergeItemsToFloor(CardSelector cardSelector) {
+        if (cardSelector.hasCards()) {
+            this.cards.addAll(cardSelector.getCards());
+        }
+        if (cardSelector.hasHouses()) {
+            this.houses.addAll(cardSelector.getHouses());
+        }
+    }
+
     /**
-     * Finds or creates appropriate house to merge with source house
+     * Adds the source house and updates the floor state
      *
-     * @param source source house
+     * @param source       the source house
+     * @param cardSelector the card selector
      */
-    public void performMerge(House source) {
+    public void performMerge(House source, CardSelector cardSelector) throws RankMismatchException {
         House target = findHouseWithRank(source.getRank());
 
         if (target != null) {
@@ -74,59 +118,45 @@ public class Floor implements Serializable {
         } else {
             this.houses.add(source);
         }
+
+        this.removeMergeItemsFromFloor(cardSelector);
     }
 
+    /**
+     * Removes the source house and resets floor state
+     *
+     * @param source       the source house
+     * @param cardSelector the card selector
+     */
     public void undoMerge(House source, CardSelector cardSelector) {
-        this.removeHouse(source);
+        House parent = source.getParent();
 
-        if (cardSelector.hasCards()) {
-            this.cards.addAll(cardSelector.getCards());
-        }
-
-        if (cardSelector.hasHouses()) {
-            this.houses.addAll(cardSelector.getHouses());
-        }
-    }
-
-    public void performClaim(CardSelector cardSelector) {
-
-        if (cardSelector.getCards() != null) {
-            this.cards.removeAll(cardSelector.getCards());
-        }
-
-        if (cardSelector.getHouses() != null) {
-            this.houses.removeAll(cardSelector.getHouses());
-        }
-
-    }
-
-    public void undoClaim(CardSelector cardSelector) {
-
-        if (cardSelector.getCards() != null) {
-            this.cards.addAll(cardSelector.getCards());
-        }
-
-        if (cardSelector.getHouses() != null) {
-            this.houses.addAll(cardSelector.getHouses());
-        }
-    }
-
-    private void removeHouse(House h) {
-        House parent = h.getParent();
-
-        /*
-         * No parent implies that this is the outermost house in the house tree. It must
-         * lie on the floor.
-         */
         if (parent == null) {
-            this.houses.remove(h);
+            this.houses.remove(source);
+        } else {
+            parent.removeChild(source);
         }
-        /*
-         * We remove the reference to the child house from its parent. It woudl then be
-         * removed from the picture.
-         */
-        else {
-            parent.removeChild(h);
-        }
+
+        this.addMergeItemsToFloor(cardSelector);
+    }
+
+    /**
+     * Removes the cards and houses from floor as they are
+     * owned by the player who initiated the claim op
+     *
+     * @param cardSelector the card selector
+     */
+    public void performClaim(CardSelector cardSelector) {
+        removeMergeItemsFromFloor(cardSelector);
+    }
+
+    /**
+     * Resets the cards and houses to the floor as they
+     * are owned by the floor again
+     *
+     * @param cardSelector the card selector
+     */
+    public void undoClaim(CardSelector cardSelector) {
+        addMergeItemsToFloor(cardSelector);
     }
 }

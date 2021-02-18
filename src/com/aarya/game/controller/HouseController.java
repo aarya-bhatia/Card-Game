@@ -4,7 +4,7 @@ import com.aarya.game.model.*;
 
 public class HouseController {
 
-    public static void addChild(House source, House child) {
+    public static void addChild(House source, House child) throws RankMismatchException {
         source.add(child);
     }
 

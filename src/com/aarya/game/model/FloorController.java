@@ -1,7 +1,6 @@
 package com.aarya.game.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 public class FloorController {
 
@@ -11,6 +10,12 @@ public class FloorController {
         this.floor = floor;
     }
 
+    /**
+     * Finds a house of same rank
+     *
+     * @param r the rank to look for
+     * @return A house or null
+     */
     public House findHouse(Rank r) {
         for (House h : floor.getHouses()) {
             if (h.getRank().equals(r)) {
@@ -20,6 +25,11 @@ public class FloorController {
         return null;
     }
 
+    /**
+     * Removes all cards and houses contained by cardSelector to the floor
+     *
+     * @param cardSelector the cardSelector
+     */
     public void removeMergeItemsFromFloor(CardSelector cardSelector) {
         if (cardSelector.hasCards()) {
             floor.getCards().removeAll(cardSelector.getCards());
@@ -29,6 +39,11 @@ public class FloorController {
         }
     }
 
+    /**
+     * Adds all cards and houses contained by cardSelector to the floor
+     *
+     * @param cardSelector the cardSelector
+     */
     public void addMergeItemsToFloor(CardSelector cardSelector) {
         if (cardSelector.hasCards()) {
             floor.getCards().addAll(cardSelector.getCards());
@@ -48,19 +63,15 @@ public class FloorController {
         House target = new House(source.getRank());
         House residents = findHouse(source.getRank());
 
-        List<House> children = new ArrayList<>();
-
-        children.add(source);
-        source.setParent(target);
-
-        if (residents != null) {
-            children.add(residents);
+        if (residents == null) {
+            this.floor.getHouses().add(source);
+        } else {
+            target.setChildren(Arrays.asList(residents, source));
             residents.setParent(target);
+            source.setParent(target);
+            this.floor.getHouses().add(target);
         }
-
-        target.setChildren(children);
-
-        floor.getHouses().add(target);
+        /* Items contained in the source house are removed from the floor */
         removeMergeItemsFromFloor(cardSelector);
     }
 
@@ -71,8 +82,23 @@ public class FloorController {
      * @param cardSelector the card selector
      */
     public void undoMerge(House source, CardSelector cardSelector) {
+        /* Items contained in the source house are added to the floor */
         addMergeItemsToFloor(cardSelector);
-        floor.getHouses().remove(source.getParent());
+
+        if (source.getParent() == null) {
+            floor.getHouses().remove(source.getParent());
+        } else {
+            House parent = source.getParent();
+            parent.remove(source);
+
+            /* All residents are also added to the floor */
+            for (House house : parent.getChildren()) {
+                this.floor.getHouses().add(house);
+            }
+            for (Card card : parent.getCards()) {
+                this.floor.getCards().add(card);
+            }
+        }
     }
 
     /**
@@ -104,6 +130,12 @@ public class FloorController {
         return false;
     }
 
+    /**
+     * Searches for the house on the floor
+     *
+     * @param target the house to look for
+     * @return the house if found, or null
+     */
     public boolean hasHouse(House target) {
         for (House house : this.floor.getHouses()) {
             if (house == target) {

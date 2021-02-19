@@ -4,10 +4,6 @@ import java.io.Serializable;
 
 public class Command implements Serializable {
 
-    protected enum CommandState {
-        READY_TO_EXECUTE, READY_TO_UNDO
-    }
-
     protected final CardSelector cardSelector;
     protected final PlayerController playerController;
     protected final FloorController floorController;

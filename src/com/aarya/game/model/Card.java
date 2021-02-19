@@ -2,20 +2,15 @@ package com.aarya.game.model;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Card implements Comparable<Card>, Collectible, Serializable {
 
 	private final Rank rank;
 	private final Suit suit;
 
-	private static final Logger logger = Logger.getLogger(Card.class.getName());
-
 	public Card(Rank rank, Suit suit) {
 		this.rank = rank;
 		this.suit = suit;
-//		logger.log(Level.INFO, "Created Card: " + this.toString());
 	}
 
 	public Rank getRank() {
@@ -45,6 +40,8 @@ public class Card implements Comparable<Card>, Collectible, Serializable {
 	}
 
 	/**
+	 * Scoring Rules
+	 *
 	 * <ul>
 	 * <li>Cards of SPADE suit have points equal to their rank</li>
 	 * <li>TEN of DIAMOND has 2 points</li>

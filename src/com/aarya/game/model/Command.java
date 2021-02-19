@@ -4,15 +4,15 @@ import java.io.Serializable;
 
 public class Command implements Serializable {
 
-    private enum CommandState {
+    protected enum CommandState {
         READY_TO_EXECUTE, READY_TO_UNDO
     }
 
-    private final CardSelector cardSelector;
-    private final PlayerController playerController;
-    private final FloorController floorController;
-    private CommandState state;
-    private final House source;
+    protected final CardSelector cardSelector;
+    protected final PlayerController playerController;
+    protected final FloorController floorController;
+    protected CommandState state;
+    protected final House source;
 
     public Command(CardSelector cardSelector, PlayerController playerController, FloorController floorController)
             throws IllegalMoveException {
@@ -51,12 +51,9 @@ public class Command implements Serializable {
                 throw new IllegalMoveException("Floor does not have house: " + house);
             }
         }
-        if (!Rank.isValidRank(getSourceRank())) {
-            throw new IllegalMoveException("Cannot create house with invalid rank");
-        }
     }
 
-    private Rank getSourceRank() {
+    protected Rank getSourceRank() {
         return Rank.normaliseRank(cardSelector.getCaptureValue());
     }
 

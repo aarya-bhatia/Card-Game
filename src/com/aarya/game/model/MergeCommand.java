@@ -6,6 +6,13 @@ public class MergeCommand extends Command {
         super(cardSelector, playerController, floorController);
     }
 
+    @Override
+    public void handleValidation() throws IllegalMoveException {
+        if (!Rank.isValidRank(getSourceRank())) {
+            throw new IllegalMoveException("Cannot create house with invalid rank");
+        }
+    }
+
     /**
      * The source house is added or merged with another resident on the floor.
      * The player card is taken from the player.
@@ -15,8 +22,8 @@ public class MergeCommand extends Command {
     @Override
     public void execute() throws IllegalMoveException {
         super.execute();
-        getFloorController().performMerge(getSource(), getCardSelector());
-        getPlayerController().performMerge(getCardSelector().getPlayerCard());
+        floorController.performMerge(source, cardSelector);
+        playerController.performMerge(cardSelector.getPlayerCard());
     }
 
     /**
@@ -28,7 +35,7 @@ public class MergeCommand extends Command {
     @Override
     public void undo() throws IllegalMoveException {
         super.undo();
-        getFloorController().undoMerge(getSource(), getCardSelector());
-        getPlayerController().undoMerge(getCardSelector().getPlayerCard());
+        getFloorController().undoMerge(getSource(), cardSelector);
+        playerController.undoMerge(cardSelector.getPlayerCard());
     }
 }

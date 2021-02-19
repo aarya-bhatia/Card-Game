@@ -10,20 +10,17 @@ import static org.junit.Assert.*;
 
 public class HouseTest {
 
-    House house;
-
-    public HouseTest() {
-        house = new House(Rank.KING);
-        System.out.println("House Created: " + house);
-    }
-
     @Test
-    public void addCardsTest() throws RankMismatchException {
-        house.addCards(Arrays.asList(
+    public void addTest() {
+        System.out.println("In addTest()");
+        House house = new House(Rank.KING);
+
+        house.setCards(Arrays.asList(
                 new Card(Rank.SEVEN, Suit.SPADE),
                 new Card(Rank.SIX, Suit.SPADE)
         ));
 
+        System.out.println("House Created: " + house);
         house.displayCards();
 
         assertNotNull("House should exist", house);
@@ -34,8 +31,12 @@ public class HouseTest {
     }
 
     @Test
-    public void addChildHousesTest() throws RankMismatchException {
-        assertNotNull(house.getChildren());
+    public void addRemoveChildTest() {
+        System.out.println("In addRemoveChildTest()");
+
+        House house = new House(Rank.KING);
+        System.out.println("House Created: " + house);
+
         assertEquals("House should not have any children", house.getChildren().size(), 0);
 
         House child1 = new House(house.getRank());
@@ -49,22 +50,16 @@ public class HouseTest {
         Card c1 = new Card(Rank.FIVE, Suit.CLUB);
         Card c2 = new Card(Rank.EIGHT, Suit.CLUB);
 
-        List<Card> l1 = Arrays.asList(c1, c2);
-
         Card c3 = new Card(Rank.TWO, Suit.CLUB);
         Card c4 = new Card(Rank.JACK, Suit.CLUB);
-
-        List<Card> l2 = Arrays.asList(c3, c4);
 
         Card c5 = new Card(Rank.ACE, Suit.SPADE);
         Card c6 = new Card(Rank.TWO, Suit.SPADE);
         Card c7 = new Card(Rank.TEN, Suit.DIAMOND);
 
-        List<Card> l3 = Arrays.asList(c5, c6, c7);
-
-        child1.addCards(l1);
-        child2.addCards(l2);
-        child3.addCards(l3);
+        child1.setCards(Arrays.asList(c1, c2));
+        child2.setCards(Arrays.asList(c3, c4));
+        child3.setCards(Arrays.asList(c5, c6, c7));
 
         house.add(child1);
         house.add(child2);
@@ -72,58 +67,45 @@ public class HouseTest {
 
         assertEquals("Should have three children", house.getChildren().size(), 3);
         house.displayCards();
-    }
 
-    @Test(expected = RankMismatchException.class)
-    public void addIllegalHouse() throws RankMismatchException {
-        int prevHouseSize = house.getChildren().size();
-        Card c8 = new Card(Rank.FOUR, Suit.HEART);
-        Card c9 = new Card(Rank.EIGHT, Suit.HEART);
-        List<Card> l = Arrays.asList(c8, c9);
-        house.addCards(l);
-        house.addCards(null);
-        assertEquals("Should not affect the house", house.getChildren().size(), prevHouseSize);
-    }
-
-    @Test
-    public void removeChildHousesTest() {
         System.out.println("Deleting children");
-        House.destroy(house);
+
+        for(House child: house) {
+            house.remove(child);
+        }
+
+        assertEquals("House should not have any children", house.getChildren().size(), 0);
+
         house.displayCards();
     }
 
+
     @Test
-    public void houseIteratorTest() throws RankMismatchException {
+    public void houseIteratorTest() {
+        System.out.println("In houseIteratorTest()");
+
         Rank rank = Rank.NINE;
 
         House h1 = new House(rank);
-        h1.addCards(Arrays.asList(new Card(Rank.TWO, Suit.SPADE), new Card(Rank.SEVEN, Suit.CLUB)));
+        h1.setCards(Arrays.asList(new Card(Rank.TWO, Suit.SPADE), new Card(Rank.SEVEN, Suit.CLUB)));
 
         House h2 = new House(rank);
-        h2.addCards(Arrays.asList(new Card(Rank.ACE, Suit.SPADE), new Card(Rank.EIGHT, Suit.HEART)));
+        h2.setCards(Arrays.asList(new Card(Rank.ACE, Suit.SPADE), new Card(Rank.EIGHT, Suit.HEART)));
 
         House h3 = new House(rank);
-        h3.addCards(Arrays.asList(new Card(Rank.NINE, Suit.DIAMOND)));
+        h3.setCards(Collections.singletonList(new Card(Rank.NINE, Suit.DIAMOND)));
 
         House main = new House(rank);
-
-        main.addCard(new Card(Rank.NINE, Suit.SPADE));
-
-        main.add(h1);
-        main.add(h2);
-        main.add(h3);
-
+        main.setCards(Collections.singletonList(new Card(Rank.NINE, Suit.SPADE)));
+        main.setChildren(Arrays.asList(h1, h2, h3));
         main.displayCards();
 
         List<House> houses = Arrays.asList(h1, h2, h3);
         int count = 0;
 
-        Iterator<House> it = main.iterator();
-
-        while(it.hasNext()) {
-            House nextHouse = it.next();
+        for (House nextHouse : main) {
             int idx = houses.indexOf(nextHouse);
-            if(idx >= 0) {
+            if (idx >= 0) {
                 count++;
             }
         }

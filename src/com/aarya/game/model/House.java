@@ -90,6 +90,10 @@ public class House implements Comparable<House>, Collectible, Iterable<House>, S
         return new HouseIterator(this);
     }
 
+    public void add(Card card) { this.cards.add(card); }
+
+    public void remove(Card card) { this.cards.remove(card); }
+
     public void add(House child) {
         this.children.add(child);
     }
@@ -123,5 +127,9 @@ public class House implements Comparable<House>, Collectible, Iterable<House>, S
             value += child.getCaptureValue();
         }
         return value;
+    }
+
+    public boolean hasParent() {
+        return this.parent != null;
     }
 }

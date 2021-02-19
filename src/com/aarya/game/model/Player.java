@@ -2,123 +2,142 @@ package com.aarya.game.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class Player implements Serializable {
 
-	private List<Card> hand;
+    /*
+     * Contains the cards available to play with
+     */
+    private List<Card> hand;
 
-	private int sweeps = 0;
+    /*
+     * The number of bonuses awarded to the player
+     */
+    private int sweeps = 0;
 
-	//TODO: implement keyBox code
-	private HashMap<Card, House> keyBox;
+    /*
+     * Contains all the houses collected by the player within the root house
+     */
+    private House collection;
 
-	private House collection;
+    public Player() {
+        this.hand = new ArrayList<>();
+    }
 
-	public Player() { this.hand = new ArrayList<>(); }
+    public Player(List<Card> hand) {
+        this();
+        this.setHand(hand);
+    }
 
-	public Player(List<Card> hand) {
-		this.hand = hand;
-	}
+    public List<Card> getHand() {
+        return this.hand;
+    }
 
-	public List<Card> getHand() {
-		return this.hand;
-	}
+    public House getCollection() {
+        return this.collection;
+    }
 
-	public House getCollection() {
-		return this.collection;
-	}
+    public void setCollection(House collection) {
+        this.collection = collection;
+    }
 
-	public void setCollection(House collection) { this.collection = collection; }
+    public boolean hasCollection() {
+        return this.collection != null;
+    }
 
-	public int getSweeps() {
-		return sweeps;
-	}
+    public int getSweeps() {
+        return sweeps;
+    }
 
-	public void setSweeps(int sweeps) {
-		this.sweeps = sweeps;
-	}
+    public void setSweeps(int sweeps) {
+        this.sweeps = sweeps;
+    }
 
-	public void setHand(List<Card> cards) {
-		this.hand = cards;
-	}
+    public void setHand(List<Card> cards) {
+        this.hand = new ArrayList<>(cards);
+    }
 
-	public HashMap<Card, House> getKeyBox() {
-		return keyBox;
-	}
+    public int getPoints() {
+        if (this.collection == null) {
+            return 0;
+        }
+        int points = 0;
+        for (House house : this.collection) {
+            points += house.getPoints();
+        }
+        return points;
+    }
 
-	public void setKeyBox(HashMap<Card, House> keyBox) {
-		this.keyBox = keyBox;
-	}
+    public String toString() {
+        return "Player # " + this.hashCode();
+    }
 
-	/**
+    public void displayCards() {
+        System.out.println("[START] " + this + " [START]");
+
+        System.out.println("Hand");
+
+        for (Card card : this.hand) {
+            System.out.println(card);
+        }
+
+        System.out.println("Collection");
+
+        for (House house : this.collection) {
+            house.displayCards();
+        }
+
+        System.out.println("[END] " + this + " [END]");
+    }
+
+    /**
+     * Adds the card to the hand
      *
-	 * @return points captured by player
-	 */
-	public int getPoints() {
-		if(this.collection == null) {
-			return 0;
-		}
+     * @param card the card to add
+     */
+    public void add(Card card) {
+        if (!this.hand.contains(card)) {
+            this.hand.add(card);
+        }
+    }
 
-		int points = 0;
+    /**
+     * Removes the card from hand
+     *
+     * @param card the card to remove
+     */
+    public void remove(Card card) {
+        this.hand.remove(card);
+    }
 
-		for (House house : this.collection) {
-			points += house.getPoints();
-		}
+    /**
+     * Adds or sets the house to the collection.
+     *
+     * @param house the house to add
+     */
+    public void add(House house) {
+        if (!this.hasCollection()) {
+            this.collection = house;
+        } else {
+            this.collection.add(house);
+        }
+    }
 
-		return points;
-	}
-
-	public String toString() {
-		return "Player # " + this.hashCode();
-	}
-
-	public void displayCards() {
-		System.out.println("[START] " + this + " [START]");
-
-		System.out.println("Hand");
-
-		for (Card card : this.hand) {
-			System.out.println(card);
-		}
-
-		System.out.println("Collection");
-
-		for(House house: this.collection) {
-			house.displayCards();
-		}
-
-		System.out.println("[END] " + this + " [END]");
-	}
-
-	public void add(Card card) {
-		if(!this.hand.contains(card)) {
-			this.hand.add(card);
-		}
-	}
-
-	public void remove(Card card) {
-		this.hand.remove(card);
-	}
-
-	public void add(House house) {
-		if(this.collection == null) {
-			this.collection = house;
-		} else {
-			this.collection.add(house);
-		}
-	}
-
-	public void remove(House house) {
-		if(this.collection == null) {
-			return;
-		}
-		if(house.getParent() == null) {
-			this.collection.remove(house);
-		} else {
-			house.getParent().remove(house);
-		}
-	}
+    /**
+     * Removes or resets the player collection
+     *
+     * @param house the house to remove
+     */
+    public void remove(House house) {
+        if (!this.hasCollection()) {
+            return;
+        }
+        if (house.hasParent()) {
+            this.collection.remove(house);
+        } else {
+            house.getParent().remove(house);
+        }
+    }
 
 }

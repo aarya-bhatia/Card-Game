@@ -5,13 +5,15 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class CardSelectorTest {
 
     @Test
-    public void cardSelectionTest() throws RankMismatchException {
+    public void cardSelectionTest() {
 
         List<Card> cards = Arrays.asList(
                 new Card(Rank.FIVE, Suit.DIAMOND),
@@ -42,8 +44,7 @@ public class CardSelectorTest {
         assertEquals(cardSelector.getCards(), Arrays.asList(cards.get(0), cards.get(2)));
         assertSame(cardSelector.getPlayerCard(), selectedCard);
 
-        House house = new House(Rank.JACK);
-        house.addCard(new Card(Rank.JACK, Suit.DIAMOND));
+        House house = new House(Rank.JACK, new ArrayList<>(Collections.singletonList(new Card(Rank.JACK, Suit.DIAMOND))), new ArrayList<>());
 
         cardSelector.deselect(house);
         cardSelector.select(house);

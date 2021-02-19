@@ -18,23 +18,8 @@ public class Sweep {
 		this.floor = new Floor(this.deck.drawCards(4));
 	}
 
-	public void displayState() {
-		System.out.println("Player 1\n");
-		this.player1.show();
-
-		System.out.println("Player 2\n");
-		this.player2.show();
-
-		System.out.println("floor\n");
-		this.floor.show();
-
-		System.out.println("deck\n");
-		this.deck.show();
-	}
-
 	public static void main(String[] args) {
-		Sweep sweep = new Sweep();
-		sweep.displayState();
+
 	}
 
 }

@@ -14,51 +14,64 @@ public class Client {
     protected final Socket socket;
     protected final ObjectOutputStream out;
     protected final ObjectInputStream in;
+    protected final Scanner sc = new Scanner(System.in);
+
+    private volatile boolean running;
 
     public Client() throws IOException {
         this.socket = new Socket(NetworkConnection.host, NetworkConnection.port);
         this.out = new ObjectOutputStream(socket.getOutputStream());
         this.in = new ObjectInputStream(socket.getInputStream());
+        this.running = true;
+
         System.out.println("Client: " + this.socket);
+
+        Thread reader = new Thread(() -> {
+            while (isRunning()) {
+                try {
+                    String message = (String) in.readObject();
+                    System.out.println("Message from Server: " + message);
+                } catch (IOException | ClassNotFoundException e) {
+                    System.out.println("Exception in Client Reader");
+                    setRunning(false);
+                    break;
+                }
+            }
+        });
+
+        Thread writer = new Thread(() -> {
+            while (isRunning()) {
+                String input = sc.nextLine();
+                try {
+                    out.writeObject(input);
+
+                    if (input.equalsIgnoreCase("EXIT")) {
+                        System.out.println("Closing connection");
+                        socket.close();
+                        running = false;
+                    }
+                } catch (IOException e) {
+                    System.out.println("Exception in client writer");
+                    setRunning(false);
+                    break;
+                }
+            }
+        });
+
+        reader.start();
+        writer.start();
     }
 
-    public void write(Object object) throws IOException {
-        out.writeObject(object);
-        out.flush();
+    private boolean isRunning() {
+        return running;
     }
 
-    public Object read() throws IOException, ClassNotFoundException {
-        return in.readObject();
-    }
-
-    public void close() throws IOException {
-        this.socket.close();
+    private synchronized void setRunning(boolean b) {
+        running = b;
     }
 
     public static void main(String[] args) throws IOException {
-        Client client = null;
-        try (Scanner sc = new Scanner(System.in)) {
-            client = new Client();
-            while(true) {
-                System.out.println("Server: " + client.read());
-
-                String input = sc.nextLine();
-                client.write(input);
-
-                if(input.equalsIgnoreCase("EXIT")) {
-                    System.out.println("Closing connection");
-                    client.close();
-                    break;
-                }
-
-            }
-        } catch (IOException | ClassNotFoundException ex) {
-            System.out.println("Client Error: " + ex);
-        } finally {
-            if(client != null) {
-                client.close();
-            }
-        }
+        new Client();
     }
 
 }

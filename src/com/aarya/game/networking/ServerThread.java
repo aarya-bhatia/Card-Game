@@ -7,46 +7,55 @@ import java.net.Socket;
 
 public class ServerThread extends Thread {
 
-    final Socket socket;
+    final Server server;
     final ObjectOutputStream out;
     final ObjectInputStream in;
+    final Socket socket;
 
-    public ServerThread(Socket socket, ObjectInputStream in, ObjectOutputStream out) {
+    volatile boolean running;
+
+    public ServerThread(Server server, Socket socket, ObjectInputStream in, ObjectOutputStream out) {
+        this.server = server;
         this.socket = socket;
         this.out = out;
         this.in = in;
     }
 
-    public void write(Object object) throws IOException {
-        this.out.writeObject(object);
+    public synchronized void setRunning(boolean b) {
+        running = b;
     }
 
     @Override
     public void run() {
-        String s = "";
-
-        while(true) {
+        setRunning(true);
+        while (running) {
             try {
-                write("Send message to server (Type EXIT to terminate connection):");
-
-                s = (String) in.readObject();
-                if(s.equalsIgnoreCase("EXIT")) {
-                    System.out.println("Terminating client: " + this.socket);
-                    this.socket.close();
-                    // TODO: remove connection from server
+                String s = (String) in.readObject();
+                System.out.println("Message Received: " + s);
+                server.broadcast(socket, s);
+                if (s.equalsIgnoreCase("EXIT")) {
+                    close();
+                }
+            } catch (Exception e) {
+                System.out.println("Exception in server: " + e.getMessage());
+                try {
+                    close();
+                } catch (IOException e2) {
                     break;
                 }
-            } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
             }
         }
+    }
 
-        try {
-            this.out.close();
-            this.in.close();
-        }
-        catch (IOException ex) {
-            ex.printStackTrace();
-        }
+    public synchronized void update(Socket client, String message) throws IOException {
+        this.out.writeObject("[" + client.getPort() + "]" + " : " + message);
+    }
+
+    public void close() throws IOException {
+        System.out.println("Terminating connection for client: " + this.socket);
+        setRunning(false);
+        socket.close();
+        this.server.unregister(this);
     }
 }
+

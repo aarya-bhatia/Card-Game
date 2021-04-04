@@ -1,13 +1,8 @@
-package com.aarya.game.networking;
+package com.aarya.networking;
 
-import java.awt.*;
 import java.net.*;
 import java.io.*;
 import java.util.Scanner;
-
-import com.aarya.game.model.Card;
-import com.aarya.game.model.Rank;
-import com.aarya.game.model.Suit;
 
 public class Client {
 
@@ -19,28 +14,54 @@ public class Client {
     private volatile boolean running;
 
     public Client() throws IOException {
-        this.socket = new Socket(NetworkConnection.host, NetworkConnection.port);
+        this.socket = new Socket(Server.host, Server.port);
         this.out = new ObjectOutputStream(socket.getOutputStream());
         this.in = new ObjectInputStream(socket.getInputStream());
         this.running = true;
 
         System.out.println("Client: " + this.socket);
 
-        Thread reader = new Thread(() -> {
+        Thread reader = new Thread(new Reader());
+        reader.start();
+
+        Thread writer = new Thread(new Writer());
+        writer.start();
+    }
+
+    private boolean isRunning() {
+        return running;
+    }
+
+    private synchronized void setRunning(boolean b) {
+        running = b;
+    }
+
+    public static void main(String[] args) throws IOException {
+        new Client();
+    }
+
+    private class Reader implements Runnable {
+
+        @Override
+        public void run() {
             while (isRunning()) {
                 try {
                     String message = (String) in.readObject();
-                    System.out.println("Message from Server: " + message);
+                    System.out.println("New Message: " + message);
                 } catch (IOException | ClassNotFoundException e) {
                     System.out.println("Exception in Client Reader");
                     setRunning(false);
                     break;
                 }
             }
-        });
+        }
+    }
 
-        Thread writer = new Thread(() -> {
-            while (isRunning()) {
+    private class Writer implements Runnable {
+
+        @Override
+        public void run() {
+            while (running) {
                 String input = sc.nextLine();
                 try {
                     out.writeObject(input);
@@ -56,22 +77,7 @@ public class Client {
                     break;
                 }
             }
-        });
-
-        reader.start();
-        writer.start();
-    }
-
-    private boolean isRunning() {
-        return running;
-    }
-
-    private synchronized void setRunning(boolean b) {
-        running = b;
-    }
-
-    public static void main(String[] args) throws IOException {
-        new Client();
+        }
     }
 
 }

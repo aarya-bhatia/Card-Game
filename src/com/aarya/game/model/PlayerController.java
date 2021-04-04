@@ -1,12 +1,7 @@
 package com.aarya.game.model;
 
+
 public class PlayerController {
-
-    Player player;
-
-    public PlayerController(Player player) {
-        this.player = player;
-    }
 
     /**
      * Checks to see if player has card matching the source house
@@ -15,8 +10,8 @@ public class PlayerController {
      * @param source     the source house
      * @return true if player has key otherwise false
      */
-    public boolean hasKey(Card playerCard, House source) {
-        for (Card card : this.player.getHand()) {
+    public static boolean hasKey(Player player, Card playerCard, House source) {
+        for (Card card : player.getHand()) {
             if (card != playerCard && card.getRank().equals(source.getRank())) {
                 return true;
             }
@@ -28,13 +23,28 @@ public class PlayerController {
      * @param playerCard the selected card
      * @return checks if player has the selected card in hand
      */
-    public boolean hasCard(Card playerCard) {
-        for (Card card : this.player.getHand()) {
+    public static boolean hasCard(Player player, Card playerCard) {
+        for (Card card : player.getHand()) {
             if (card == playerCard) {
                 return true;
             }
         }
         return false;
+    }
+
+    /**
+     * Finds a card by rank and suit in player's hand
+     * @param rank rank
+     * @param suit suit
+     * @return the card if found
+     */
+    public static Card findCard(Player player, Rank rank, Suit suit) {
+        for(Card card: player.getHand()) {
+            if(card.getRank().equals(rank) && card.getSuit().equals(suit)) {
+                return card;
+            }
+        }
+        return null;
     }
 
 
@@ -43,8 +53,8 @@ public class PlayerController {
      *
      * @param selectedCard the card
      */
-    public void performMerge(Card selectedCard) {
-        this.player.remove(selectedCard);
+    public static void performMerge(Player player, Card selectedCard) {
+        player.remove(selectedCard);
     }
 
     /**
@@ -52,8 +62,8 @@ public class PlayerController {
      *
      * @param selectedCard the selected card
      */
-    public void undoMerge(Card selectedCard) {
-        this.player.add(selectedCard);
+    public static void undoMerge(Player player, Card selectedCard) {
+        player.add(selectedCard);
     }
 
     /**
@@ -61,8 +71,8 @@ public class PlayerController {
      *
      * @param h the given house
      */
-    public void performClaim(House h) {
-        this.player.add(h);
+    public static void performClaim(Player player, House h) {
+        player.add(h);
     }
 
     /**
@@ -70,8 +80,8 @@ public class PlayerController {
      *
      * @param h given house
      */
-    public void undoClaim(House h) {
-        this.player.remove(h);
+    public static void undoClaim(Player player, House h) {
+        player.remove(h);
     }
 
 }

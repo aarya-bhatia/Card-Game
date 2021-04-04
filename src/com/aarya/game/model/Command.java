@@ -4,16 +4,15 @@ import java.io.Serializable;
 
 public class Command implements Serializable {
 
-    protected final CardSelector cardSelector;
-    protected final PlayerController playerController;
+    protected final Player player;
     protected final FloorController floorController;
+    protected final CardSelector cardSelector;
     protected CommandState state;
     protected final House source;
 
-    public Command(CardSelector cardSelector, PlayerController playerController, FloorController floorController)
-            throws IllegalMoveException {
+    public Command(CardSelector cardSelector, Player player, FloorController floorController)throws IllegalMoveException {
+        this.player = player;
         this.cardSelector = cardSelector;
-        this.playerController = playerController;
         this.floorController = floorController;
         this.state = CommandState.READY_TO_EXECUTE;
         this.source = constructSourceHouse();
@@ -21,17 +20,17 @@ public class Command implements Serializable {
     }
 
     /**
-     * All exception handling should be done over here
+     * All exception handling is done over here
      * @throws IllegalMoveException an illegal move
      */
     public void handleValidation() throws IllegalMoveException {
         if (!cardSelector.hasSelectedCard()) {
             throw new IllegalMoveException("Player must select a card to play");
         }
-        if (!playerController.hasCard(cardSelector.getPlayerCard())) {
+        if (!PlayerController.hasCard(player, cardSelector.getPlayerCard())) {
             throw new IllegalMoveException("Player does not have card: " + cardSelector.getPlayerCard());
         }
-        if(!playerController.hasKey(cardSelector.getPlayerCard(), source)) {
+        if(!PlayerController.hasKey(player, cardSelector.getPlayerCard(), source)) {
             throw new IllegalMoveException("Player does not have key for house: " + source);
         }
         for (Card card : cardSelector.getCards()) {
@@ -63,10 +62,6 @@ public class Command implements Serializable {
 
     public FloorController getFloorController() {
         return floorController;
-    }
-
-    public PlayerController getPlayerController() {
-        return playerController;
     }
 
     public void setCommandState(CommandState state) {

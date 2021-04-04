@@ -2,8 +2,8 @@ package com.aarya.game.model;
 
 public class MergeCommand extends Command {
 
-    public MergeCommand(CardSelector cardSelector, PlayerController playerController, FloorController floorController) throws IllegalMoveException {
-        super(cardSelector, playerController, floorController);
+    public MergeCommand(CardSelector cardSelector, Player player, FloorController floorController) throws IllegalMoveException {
+        super(cardSelector, player, floorController);
     }
 
     @Override
@@ -23,7 +23,7 @@ public class MergeCommand extends Command {
     public void execute() throws IllegalMoveException {
         super.execute();
         floorController.performMerge(source, cardSelector);
-        playerController.performMerge(cardSelector.getPlayerCard());
+        PlayerController.performMerge(player, cardSelector.getPlayerCard());
     }
 
     /**
@@ -36,6 +36,6 @@ public class MergeCommand extends Command {
     public void undo() throws IllegalMoveException {
         super.undo();
         getFloorController().undoMerge(getSource(), cardSelector);
-        playerController.undoMerge(cardSelector.getPlayerCard());
+        PlayerController.undoMerge(player, cardSelector.getPlayerCard());
     }
 }

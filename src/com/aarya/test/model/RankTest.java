@@ -1,4 +1,4 @@
-package com.aarya.test;
+package com.aarya.test.model;
 
 import com.aarya.game.model.Rank;
 import org.junit.Test;

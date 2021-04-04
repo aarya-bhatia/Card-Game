@@ -1,4 +1,4 @@
-package com.aarya.test;
+package com.aarya.test.model;
 
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;

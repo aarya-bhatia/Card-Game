@@ -82,10 +82,12 @@ public class Player implements Serializable {
             System.out.println(card);
         }
 
-        System.out.println("Collection");
 
-        for (House house : this.collection) {
-            house.displayCards();
+        if(this.collection != null) {
+            System.out.println("Collection");
+            for (House house : this.collection) {
+                house.displayCards();
+            }
         }
 
         System.out.println("[END] " + this + " [END]");

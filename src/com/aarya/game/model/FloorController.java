@@ -130,6 +130,15 @@ public class FloorController {
         return false;
     }
 
+    public Card findCard(Rank rank, Suit suit) {
+        for(Card card: this.floor.getCards()) {
+            if(card.getRank().equals(rank) && card.getSuit().equals(suit)) {
+                return card;
+            }
+        }
+        return null;
+    }
+
     /**
      * Searches for the house on the floor
      *
@@ -143,5 +152,9 @@ public class FloorController {
             }
         }
         return false;
+    }
+
+    public Floor getFloor() {
+        return this.floor;
     }
 }

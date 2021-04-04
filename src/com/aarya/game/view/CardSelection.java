@@ -1,12 +1,10 @@
 package com.aarya.game.view;
 
-import java.util.Scanner;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.aarya.game.model.Rank;
-import com.aarya.game.model.Rank;
-import com.aarya.game.model.Suit;
+import com.aarya.game.model.*;
 
 public class CardSelection {
 
@@ -52,15 +50,10 @@ public class CardSelection {
         }
     }
 
-    public static void filter(String input) {
+    public static Rank parseRankFromInput(String input) {
         input = input.toLowerCase();
-
         Matcher r_matcher = R_PATTERN.matcher(input);
-        Matcher s_matcher = S_PATTERN.matcher(input);
-
-        int value;
-        Rank r = null;
-
+        int value = 0;
         if (r_matcher.find()) {
             String group = r_matcher.group();
             try {
@@ -68,35 +61,17 @@ public class CardSelection {
             } catch (NumberFormatException ex) {
                 value = getLetterRankValue(group.charAt(0));
             }
-
-            r = Rank.find(value);
         }
-
-        if (r == null) {
-            System.out.println("rank not found");
-            return;
-        }
-
-        Suit suit = null;
-
+        return Rank.find(value);
+    }
+    public static Suit parseSuitFromInput(String input) {
+        input = input.toLowerCase();
+        Matcher s_matcher = S_PATTERN.matcher(input);
         if (s_matcher.find()) {
             String group = s_matcher.group();
-            suit = getSuit(group.charAt(0));
+            return getSuit(group.charAt(0));
         }
-
-        if (suit == null) {
-            System.out.println("rank not found");
-            return;
-        }
-
-        System.out.println("Card Selected: " + r.getValue() + suit.getSymbol());
+        return null;
     }
 
-    public static void main(String[] args) {
-        try (Scanner sc = new Scanner(System.in)) {
-            System.out.println("Enter card: ");
-            String cardText = sc.nextLine();
-            filter(cardText);
-        }
-    }
 }

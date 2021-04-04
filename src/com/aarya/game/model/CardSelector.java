@@ -79,4 +79,20 @@ public class CardSelector {
         }
         return c;
     }
+
+    public void show() {
+        System.out.println("[START] PLAYER CARD [START]");
+        System.out.println(this.getPlayerCard());
+        System.out.println("[END] PLAYER CARD [END]");
+        System.out.println("[START] CARDS [START]");
+        for(Card card: this.getCards()) {
+            System.out.println(card);
+        }
+        System.out.println("[END] CARDS [END]");
+        System.out.println("[START] HOUSES [START]");
+        for(House house: this.getHouses()) {
+            System.out.println(house);
+        }
+        System.out.println("[END] HOUSES [END]");
+    }
 }

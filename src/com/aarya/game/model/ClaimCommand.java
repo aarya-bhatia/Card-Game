@@ -2,8 +2,8 @@ package com.aarya.game.model;
 
 public class ClaimCommand extends Command {
 
-    public ClaimCommand(CardSelector cardSelector, PlayerController playerController, FloorController floorController) throws IllegalMoveException {
-        super(cardSelector, playerController, floorController);
+    public ClaimCommand(CardSelector cardSelector, Player player, FloorController floorController) throws IllegalMoveException {
+        super(cardSelector, player, floorController);
     }
 
     @Override
@@ -24,14 +24,14 @@ public class ClaimCommand extends Command {
     public void execute() throws IllegalMoveException {
         super.execute();
         getFloorController().performClaim(getCardSelector());
-        getPlayerController().performClaim(getSource());
+        PlayerController.performClaim(player, getSource());
     }
 
     @Override
     public void undo() throws IllegalMoveException {
         super.undo();
         getFloorController().undoClaim(getCardSelector());
-        getPlayerController().undoClaim(getSource());
+        PlayerController.undoClaim(player, getSource());
     }
 
 }

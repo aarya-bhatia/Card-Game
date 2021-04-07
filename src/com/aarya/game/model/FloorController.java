@@ -33,9 +33,15 @@ public class FloorController {
     public void removeMergeItemsFromFloor(CardSelector cardSelector) {
         if (cardSelector.hasCards()) {
             floor.getCards().removeAll(cardSelector.getCards());
+            for(Card card: cardSelector.getCards()) {
+                floor.getCardContainer().remove(card.getCardPane());
+            }
         }
         if (cardSelector.hasHouses()) {
             floor.getHouses().removeAll(cardSelector.getHouses());
+            for(House house: cardSelector.getHouses()) {
+                floor.getCardContainer().remove(house.getHousePane());
+            }
         }
     }
 
@@ -47,9 +53,15 @@ public class FloorController {
     public void addMergeItemsToFloor(CardSelector cardSelector) {
         if (cardSelector.hasCards()) {
             floor.getCards().addAll(cardSelector.getCards());
+            for(Card card: cardSelector.getCards()) {
+                floor.getCardContainer().put(card.getCardPane());
+            }
         }
         if (cardSelector.hasHouses()) {
             floor.getHouses().addAll(cardSelector.getHouses());
+            for(House house: cardSelector.getHouses()) {
+                floor.getCardContainer().put(house.getHousePane());
+            }
         }
     }
 

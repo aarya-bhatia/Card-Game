@@ -1,5 +1,8 @@
 package com.aarya.game.model;
 
+import com.aarya.game.view.CardPane;
+import com.aarya.game.view.HousePane;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -7,6 +10,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class House implements Comparable<House>, Collectible, Iterable<House>, Serializable {
+
+    private final HousePane housePane;
 
     private List<Card> cards;
     private List<House> children;
@@ -18,6 +23,7 @@ public class House implements Comparable<House>, Collectible, Iterable<House>, S
         this.rank = rank;
         this.cards = new ArrayList<>();
         this.children = new LinkedList<>();
+        this.housePane = new HousePane("file:Cards/outline.png", rank.getName());
     }
 
     public House(Rank rank, List<Card> cards, List<House> children) {
@@ -131,5 +137,9 @@ public class House implements Comparable<House>, Collectible, Iterable<House>, S
 
     public boolean hasParent() {
         return this.parent != null;
+    }
+
+    public HousePane getHousePane() {
+        return this.housePane;
     }
 }

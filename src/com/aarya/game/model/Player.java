@@ -1,10 +1,14 @@
 package com.aarya.game.model;
 
+import com.aarya.game.view.CardContainer;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Player implements Serializable {
+
+    CardContainer cardContainer;
 
     /*
      * Contains the cards available to play with
@@ -23,6 +27,7 @@ public class Player implements Serializable {
 
     public Player() {
         this.hand = new ArrayList<>();
+        this.cardContainer = new CardContainer();
     }
 
     public Player(List<Card> hand) {
@@ -56,7 +61,9 @@ public class Player implements Serializable {
 
     public void setHand(List<Card> cards) {
         this.hand = new ArrayList<>(cards);
+        Card.loadCards(this.hand, this.cardContainer);
     }
+
 
     public int getPoints() {
         if (this.collection == null) {

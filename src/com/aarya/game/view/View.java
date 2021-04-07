@@ -1,17 +1,13 @@
 package com.aarya.game.view;
 
 import com.aarya.game.model.Card;
-import javafx.scene.*;
+import com.aarya.game.model.House;
+import com.aarya.game.model.Rank;
+import com.aarya.game.model.Suit;
 import javafx.scene.layout.*;
 import javafx.application.Application;
-import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
-import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
-import javafx.scene.image.ImageView;
-
-import java.util.Hashtable;
 
 public class View extends Application {
 
@@ -19,38 +15,23 @@ public class View extends Application {
         launch(args);
     }
 
-    Hashtable<String, Image> cardImages;
-
-    static String[] suits = {"H","D","C","S"};
-    static String[] ranks = {"A","2","3","4","5","6","7","8","9","10","J","Q","K"};
-
-    public void loadImages() {
-        cardImages = new Hashtable<>();
-        for(String suit:suits) {
-            for(String rank:ranks){
-                String name = CardPane.getFileURL(suit, rank);
-                Image image = new Image(name);
-                cardImages.put(name, image);
-                System.out.println("Loaded Image: " + name);
-            }
-        }
-    }
-
     @Override
     public void start(Stage stage) {
         stage.setTitle("Game");
 
-        CardPane card1 = new CardPane("H", "4");
-        CardPane card2 = new CardPane("D", "10");
-        CardPane card3 = new CardPane("C", "A");
-        CardPane card4 = new CardPane("S", "K");
+        CardPane card1 = new Card(Rank.ACE, Suit.HEART).getCardPane();
+        CardPane card2 = new Card(Rank.TWO, Suit.SPADE).getCardPane();
+        CardPane card3 = new Card(Rank.KING, Suit.DIAMOND).getCardPane();
+
+        House house = new House(Rank.KING);
+        HousePane h = house.getHousePane();
 
         CardContainer container = new CardContainer();
 
         container.put(card1);
         container.put(card2);
         container.put(card3);
-        container.put(card4);
+        container.put(h);
 
         StackPane stackPane = new StackPane(container);
 

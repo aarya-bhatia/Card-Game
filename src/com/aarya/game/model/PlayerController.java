@@ -55,6 +55,7 @@ public class PlayerController {
      */
     public static void performMerge(Player player, Card selectedCard) {
         player.remove(selectedCard);
+        player.cardContainer.put(selectedCard.getCardPane());
     }
 
     /**
@@ -64,6 +65,7 @@ public class PlayerController {
      */
     public static void undoMerge(Player player, Card selectedCard) {
         player.add(selectedCard);
+        player.cardContainer.remove(selectedCard.getCardPane());
     }
 
     /**

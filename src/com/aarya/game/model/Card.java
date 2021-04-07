@@ -1,9 +1,14 @@
 package com.aarya.game.model;
 
+import com.aarya.game.view.CardContainer;
+import com.aarya.game.view.CardPane;
+
 import java.io.Serializable;
 import java.util.List;
 
 public class Card implements Comparable<Card>, Collectible, Serializable {
+
+	private final CardPane cardPane;
 
 	private final Rank rank;
 	private final Suit suit;
@@ -11,6 +16,17 @@ public class Card implements Comparable<Card>, Collectible, Serializable {
 	public Card(Rank rank, Suit suit) {
 		this.rank = rank;
 		this.suit = suit;
+		this.cardPane = new CardPane(getImageURL("Cards","png"));
+	}
+
+	public CardPane getCardPane() {
+		return this.cardPane;
+	}
+
+	public static void loadCards(List<Card> cards, CardContainer container) {
+		for(Card card: cards) {
+			container.put(card.getCardPane());
+		}
 	}
 
 	public Rank getRank() {
@@ -31,7 +47,9 @@ public class Card implements Comparable<Card>, Collectible, Serializable {
 	 * @return
 	 */
 	public String getImageURL(String rootDir, String ext) {
-		return rootDir.concat(rank.getName())
+		return ("file:").concat(rootDir)
+				.concat("/")
+				.concat(rank.getName())
 				.concat(suit.getName())
 				.concat(ext.startsWith(".") ? ext : "." + ext);
 	}
@@ -86,4 +104,5 @@ public class Card implements Comparable<Card>, Collectible, Serializable {
 	public int getCaptureValue() {
 		return this.getRank().getValue();
 	}
+
 }

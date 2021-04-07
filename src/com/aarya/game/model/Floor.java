@@ -1,5 +1,8 @@
 package com.aarya.game.model;
 
+import com.aarya.game.view.CardContainer;
+import com.aarya.game.view.CardPane;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.ArrayList;
@@ -12,9 +15,12 @@ public class Floor implements Serializable {
     private List<House> houses;
     private List<Card> cards;
 
+    private CardContainer cardContainer;
+
     public Floor() {
         this.cards = new ArrayList<>();
         this.houses = new ArrayList<>();
+        this.cardContainer = new CardContainer();
     }
 
     public Floor(List<Card> cards) {
@@ -28,6 +34,7 @@ public class Floor implements Serializable {
 
     public void setCards(List<Card> cards) {
         this.cards = new ArrayList<>(cards);
+        Card.loadCards(cards, this.cardContainer);
     }
 
     public List<House> getHouses() {
@@ -77,5 +84,8 @@ public class Floor implements Serializable {
         System.out.println("----------------------------------");
     }
 
+    public CardContainer getCardContainer() {
+        return this.cardContainer;
+    }
 }
 

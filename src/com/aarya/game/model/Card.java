@@ -25,6 +25,17 @@ public class Card implements Comparable<Card>, Collectible, Serializable {
 		return rank.getValue();
 	}
 
+	/**
+	 * @param rootDir The folder under src where images are saved
+	 * @param ext image extension, should be .png
+	 * @return
+	 */
+	public String getImageURL(String rootDir, String ext) {
+		return rootDir.concat(rank.getName())
+				.concat(suit.getName())
+				.concat(ext.startsWith(".") ? ext : "." + ext);
+	}
+
 	@Override
 	public String toString() {
 		return this.rank + " " + this.suit.getSymbol();

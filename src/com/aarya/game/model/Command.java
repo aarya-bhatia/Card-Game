@@ -1,5 +1,8 @@
 package com.aarya.game.model;
 
+import com.aarya.game.controller.FloorController;
+import com.aarya.game.controller.PlayerController;
+
 import java.io.Serializable;
 
 public class Command implements Serializable {

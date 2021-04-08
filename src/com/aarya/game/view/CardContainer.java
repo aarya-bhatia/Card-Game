@@ -1,10 +1,7 @@
 package com.aarya.game.view;
 
-import com.aarya.game.model.Card;
-import com.aarya.game.model.House;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 
 public class CardContainer extends HBox {
 

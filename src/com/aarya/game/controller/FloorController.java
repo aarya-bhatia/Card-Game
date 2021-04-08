@@ -1,4 +1,6 @@
-package com.aarya.game.model;
+package com.aarya.game.controller;
+
+import com.aarya.game.model.*;
 
 import java.util.Arrays;
 

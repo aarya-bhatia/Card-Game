@@ -11,9 +11,9 @@ import javafx.scene.text.Text;
 public class HousePane extends Pane {
 
     private static Font font = Font.font(20);
+    private static String url = "file:Cards/outline2.jpeg";
 
-    public HousePane(String url, String name) {
-
+    public HousePane(String name) {
         ImageView view = new ImageView(new Image(url));
         view.setFitHeight(120);
         view.setPreserveRatio(true);

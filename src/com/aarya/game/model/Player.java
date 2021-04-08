@@ -1,6 +1,7 @@
 package com.aarya.game.model;
 
 import com.aarya.game.view.CardContainer;
+import javafx.scene.Node;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -149,4 +150,7 @@ public class Player implements Serializable {
         }
     }
 
+    public CardContainer getCardContainer() {
+        return this.cardContainer;
+    }
 }

@@ -1,5 +1,6 @@
 package com.aarya.test.model;
 
+import com.aarya.game.controller.FloorController;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

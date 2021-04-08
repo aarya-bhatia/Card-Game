@@ -1,5 +1,7 @@
 package com.aarya.game.view;
 
+import com.aarya.game.controller.FloorController;
+import com.aarya.game.controller.PlayerController;
 import com.aarya.game.model.*;
 
 import java.util.Scanner;
@@ -15,7 +17,7 @@ public class GameView {
     }
 
     public static void showCards(Player player, Floor floor) {
-        char key = '0';
+        char key;
         do {
             System.out.println("Type 1 to list cards available in your hand");
             System.out.println("Type 2 to list cards available on the floor");
@@ -49,7 +51,7 @@ public class GameView {
         cardSelector.setPlayerCard(card);
     }
 
-    public void selectCardsAndHouses(Player player, CardSelector cardSelector) throws Exception {
+    public void selectCardsAndHouses(Player player, CardSelector cardSelector){
         showCards(player, floorController.getFloor());
 
         char response;

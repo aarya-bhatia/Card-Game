@@ -1,5 +1,7 @@
-package com.aarya.game.model;
+package com.aarya.game.controller;
 
+
+import com.aarya.game.model.*;
 
 public class PlayerController {
 
@@ -55,7 +57,7 @@ public class PlayerController {
      */
     public static void performMerge(Player player, Card selectedCard) {
         player.remove(selectedCard);
-        player.cardContainer.put(selectedCard.getCardPane());
+        player.getCardContainer().put(selectedCard.getCardPane());
     }
 
     /**
@@ -65,7 +67,7 @@ public class PlayerController {
      */
     public static void undoMerge(Player player, Card selectedCard) {
         player.add(selectedCard);
-        player.cardContainer.remove(selectedCard.getCardPane());
+        player.getCardContainer().remove(selectedCard.getCardPane());
     }
 
     /**

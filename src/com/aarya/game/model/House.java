@@ -23,7 +23,7 @@ public class House implements Comparable<House>, Collectible, Iterable<House>, S
         this.rank = rank;
         this.cards = new ArrayList<>();
         this.children = new LinkedList<>();
-        this.housePane = new HousePane("file:Cards/outline.png", rank.getName());
+        this.housePane = new HousePane(rank.getName());
     }
 
     public House(Rank rank, List<Card> cards, List<House> children) {

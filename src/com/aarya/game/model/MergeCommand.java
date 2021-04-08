@@ -1,5 +1,8 @@
 package com.aarya.game.model;
 
+import com.aarya.game.controller.FloorController;
+import com.aarya.game.controller.PlayerController;
+
 public class MergeCommand extends Command {
 
     public MergeCommand(CardSelector cardSelector, Player player, FloorController floorController) throws IllegalMoveException {

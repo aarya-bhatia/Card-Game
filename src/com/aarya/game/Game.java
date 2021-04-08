@@ -1,5 +1,6 @@
 package com.aarya.game;
 
+import com.aarya.game.controller.FloorController;
 import com.aarya.game.model.*;
 import com.aarya.game.view.GameView;
 
@@ -55,7 +56,7 @@ public class Game {
 			System.out.println("Player " + (currentPlayerIndex+1) + "'s turn...");
 
 			Player currentPlayer = players[currentPlayerIndex];
-			view.showCards(currentPlayer, floor);
+			GameView.showCards(currentPlayer, floor);
 
 			do {
 		    	nextMove = false;
@@ -102,4 +103,11 @@ public class Game {
 		game.play();
 	}
 
+	public Player[] getPlayers() {
+		return this.players;
+	}
+
+	public Floor getFloor() {
+		return this.floor;
+	}
 }
